@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recod</title>
+    <link rel="stylesheet" href="../assets/css/account.css" />
+  </head>
+  <body>
+    <div class="main-window">
+      <div class="top-bar">
+        <div class="window-title">
+          <img src="../assets/img/logo-16.png" alt="title logo" />
+          <strong>Recod</strong>
+        </div>
+        <div class="window-cta">
+          <button
+            class="min-window cta-btn"
+            title="Minimize"
+            id="minimizeWindow"
+          >
+            <span class="icon-f"
+              ><img src="../assets/icons/minus-circle.svg" alt="Minimize"
+            /></span>
+          </button>
+          <button
+            class="close-window cta-btn close-title-btn"
+            title="Close"
+            id="closeWindow"
+          >
+            <span class="icon-f"
+              ><img src="../assets/icons/x-circle.svg" alt="Close"
+            /></span>
+          </button>
+        </div>
+      </div>
+      <div class="centered-area">
+        <form id="loginForm">
+          <div class="form-title">
+            <img src="../assets/img/logo-16.png" alt="Recod Logo" />
+            <h3>Log in to Recod</h3>
+          </div>
+
+          <div class="form-body-wrapper">
+            <div class="form-body">
+              <input type="text" placeholder="Enter Email Address" id="email" />
+            </div>
+
+            <div class="form-bottom">
+              <input
+                type="password"
+                placeholder="Enter Password"
+                id="password"
+              />
+            </div>
+          </div>
+
+          <div class="err-msg">
+            <small class="err-message"></small>
+          </div>
+
+          <div class="form-call-to-action">
+            <input type="submit" value="Log In" />
+          </div>
+
+          <div class="form-footer">
+            <span></span>
+            <h3>OR</h3>
+            <span></span>
+          </div>
+
+          <div class="final-signup">
+            <a href="signup.html" class="sign-up">Create a new Account</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="../assets/js/renderer.js"></script>
+  </body>
+</html>
