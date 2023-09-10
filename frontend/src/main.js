@@ -14,8 +14,11 @@ const {
   getInputSources,
   selectSource,
   setSourceAsEntireScreen,
-  sendRecordingToServer
+  sendRecordingToServer,
+  liveStremStart,
+  liveStremStop
 } = require("./assets/js/video");
+const getSource = require("./assets/js/getSource");
 
 let userId;
 
@@ -23,6 +26,8 @@ let mainWindow;
 let loginWindow;
 let preloaderWindow;
 
+
+// all screen size and shape are mentions 
 const createMainWindow = () => {
   mainWindow = new BrowserWindow({
     width: 915,
@@ -34,6 +39,18 @@ const createMainWindow = () => {
   });
 
   mainWindow.loadFile(path.join(__dirname, "./screens/index.html"));
+};
+const createDashboardWindow = () => {
+  dashBoardWindow = new BrowserWindow({
+    width: 915,
+    height: 720,
+    frame: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+
+  dashBoardWindow.loadFile(path.join(__dirname, "./screens/desktop.html"));
 };
 
 const createLoginWindow = () => {
@@ -62,6 +79,33 @@ const createPreloaderWindow = () => {
   preloaderWindow.loadFile(path.join(__dirname, "./screens/preloader.html"));
 };
 
+const createLiveWindow = () => {
+  liveStrem = new BrowserWindow({
+    width: 915,
+    height: 720,
+    frame: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+
+  liveStrem.loadFile(path.join(__dirname, "./screens/live.html"));
+};
+
+const createListWindow = () => {
+  liveStrem = new BrowserWindow({
+    width: 915,
+    height: 720,
+    frame: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+
+  liveStrem.loadFile(path.join(__dirname, "./screens/list.html"));
+};
+
+// server started then all function run that time 
 app.whenReady().then(() => {
   createPreloaderWindow();
 
@@ -73,11 +117,10 @@ app.whenReady().then(() => {
         return;
       }
       userId = id;
-      createMainWindow();
+      createDashboardWindow();
       preloaderWindow.close();
-      setSourceAsEntireScreen(mainWindow);
-      makeTray(mainWindow);
-      toggleRecordingState(mainWindow);
+      setSourceAsEntireScreen(dashBoardWindow);
+      toggleRecordingState(dashBoardWindow);
     });
   }, 3000);
 
@@ -94,26 +137,28 @@ app.on("window-all-closed", () => {
   }
 });
 
-ipcMain.on("LOGOUT", async (event) => {
+ipcMain.on("LOGOUT-MAIN", async (event) => {
   logout(mainWindow);
+});
+
+ipcMain.on("LOGOUT-DASH", async (event) => {
+  logout(dashBoardWindow);
+});
+
+ipcMain.on("LOGOUT-LIVE", async (event) => {
+  logout(liveStrem)
 });
 
 ipcMain.on("LOGIN", async (event, email, password) => {
   login(email, password, function (res) {
-    console.log("login output: ", res);
     if (res == 0) {
       loginFailed(loginWindow);
       return;
     }
-
     userId = res.user_id;
     const code = `localStorage.setItem("userId", ${res.user_id})`;
     loginWindow.webContents.executeJavaScript(code, true);
-
-    createMainWindow();
-    setSourceAsEntireScreen(mainWindow);
-    makeTray(mainWindow);
-
+    createDashboardWindow();
     setTimeout(() => {
       loginWindow.close();
     }, 1500);
@@ -121,19 +166,7 @@ ipcMain.on("LOGIN", async (event, email, password) => {
 });
 
 ipcMain.on("GET-SOURCES", async () => {
-  const availableSources = getInputSources();
-  console.log(availableSources)
-  availableSources.then((sources) => {
-    let videoOptionsMenu = Menu.buildFromTemplate(
-      sources.map((source) => {
-        return {
-          label: source.name,
-          click: () => selectSource(source, mainWindow),
-        };
-      })
-    );
-    videoOptionsMenu.popup();
-  });
+  getSource(Menu, mainWindow)
 });
 
 ipcMain.on("SAVE-RECORDING", (event, buffer) => {
@@ -156,17 +189,51 @@ ipcMain.on("CLOSE-WINDOW", () => {
 
 ipcMain.on("SIGNUP", async (event, email, password) => {
   signup(email, password, function (res) {
-    console.log("signup output: ", res);
-    userId = res.user_id;
     const code = `localStorage.setItem("userId", ${res.user_id})`;
+    userId = res.user_id;
     loginWindow.webContents.executeJavaScript(code, true);
-
-    createMainWindow();
-    setSourceAsEntireScreen(mainWindow);
-    makeTray(mainWindow);
-
+    dashBoardWindow();
     setTimeout(() => {
       loginWindow.close();
     }, 1500);
   });
 });
+
+ipcMain.on("NavigateRecordingPage", async () => {
+  createMainWindow()
+  setSourceAsEntireScreen(mainWindow);
+  makeTray(mainWindow);
+  setTimeout(() => {
+    dashBoardWindow.close();
+  }, 300);
+
+})
+
+ipcMain.on("NavigateRecordingList", async () => {
+
+})
+
+ipcMain.on("NavigateRecordingLive", async (page) => {
+  createLiveWindow()
+  setSourceAsEntireScreen(liveStrem);
+  setTimeout(() => {
+    dashBoardWindow.close();
+  }, 300);
+})
+
+ipcMain.on("Live-Start", async (liveStrem) => {
+  let peerConnection = await liveStremStart(liveStrem)
+  console.log(liveStrem)
+  liveStrem.getTracks().forEach((track) => peerConnection.addTrack(track, stream));
+  setSourceAsEntireScreen(liveStrem);
+})
+
+ipcMain.on("Live-Stop", () => {
+  liveStremStop()
+})
+
+ipcMain.on("BACKPAGE", () => {
+  createDashboardWindow()
+  setSourceAsEntireScreen(dashBoardWindow);
+  mainWindow.close()
+})

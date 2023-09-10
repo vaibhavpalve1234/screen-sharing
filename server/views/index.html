@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Stream</title>
+</head>
+<body>
+  <video id="live-stream" autoplay controls></video>
+  <script>
+    const video = document.getElementById('live-stream');
+    const ws = new WebSocket('ws://127.0.0.1:5000');
+
+    ws.addEventListener('message', (event) => {
+      video.srcObject = event.data;
+    });
+  </script>
+</body>
+</html>

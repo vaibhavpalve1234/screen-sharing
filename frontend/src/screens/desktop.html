@@ -1,17 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desktop</title>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
 </head>
+
 <body>
-    <div class="header">
-        <div>
-            <h3>Recoding DashBord</h3>
+    <div class="main-window">
+        <div class="top-bar">
+            <div class="window-title">
+                <img src="../assets/img/logo-16.png" alt="title logo" />
+                <strong>Recod</strong>
+            </div>
+            <div class="window-cta">
+                <button class="logout-btn cta-btn" title="Logout" id="logout-dash">
+                    <span class="icon-f"><img src="../assets/icons/logout.svg" alt="Logout" /></span>
+                    Logout
+                </button>
+                <button class="min-window cta-btn" title="Minimize" id="minimizeWindow">
+                    <span class="icon-f"><img src="../assets/icons/minus-circle.svg" alt="Minimize" /></span>
+                </button>
+                <button class="max-window cta-btn" title="Maximize" id="maximizeWindow">
+                    <span class="icon-f"><img src="../assets/icons/maximize.svg" alt="Maximize" /></span>
+                </button>
+                <button class="close-window cta-btn" title="Close" id="closeWindow">
+                    <span class="icon-f"><img src="../assets/icons/x-circle.svg" alt="Close" /></span>
+                </button>
+            </div>
+        </div>
+        <div class="centered-area">
+            <div class="streamButton">
+                <br />
+                <button>Recordings..</button>
+                <div class="additional-buttons">
+                    <button class="cta-btn" id="streamButton">Record</button>
+                    <button class="cta-btn" id="streamList">List</button>
+                    <button class="cta-btn" id="liveStream">Go Live</button>
+                    <!-- Add more buttons as needed -->
+                </div>
+            </div>
         </div>
     </div>
-    
-    
+    <script src="../assets/js/renderer.js"></script>
+    <script src="../assets/js/logout.js"></script>
 </body>
+
 </html>

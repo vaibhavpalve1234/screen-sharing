@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recording List</title>
+    <!-- Add your CSS styles here -->
+    <style>
+        /* Add your CSS styles for the recording list here */
+        .recordings {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* Three columns in each row */
+            grid-gap: 20px;
+            /* Adjust the gap between videos */
+        }
+
+        li {
+            border: 1px solid #ccc;
+            background-color: #f5f5f5;
+            padding: 10px;
+        }
+
+        /* Style for video playback */
+        video {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media screen and (max-width: 720px) and (max-height: 915px) {
+            ul {
+                grid-template-columns: repeat(2, 1fr);
+                /* Two columns in each row for medium-sized screens */
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            ul {
+                grid-template-columns: repeat(1, 1fr);
+                /* Single column for small screens */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="recordings">
+        <h1>Recording List</h1>
+        <ul id="recordingList">
+            <!-- Dynamic list of recordings will be inserted here -->
+        </ul>
+    </div>
+
+    <script>
+        // Function to fetch the list of video file names from the server
+        async function fetchVideoFileNames() {
+            try {
+                const response = await fetch('http://localhost:5000'); // Replace with your API endpoint
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching video file names:', error);
+                return [];
+            }
+        }
+
+        // Reference to the recording list
+        const recordingList = document.getElementById('recordingList');
+
+        // Fetch the list of video file names and create video elements
+        fetchVideoFileNames()
+            .then(videoFileNames => {
+                videoFileNames.forEach(fileName => {
+                    const li = document.createElement('li');
+
+                    // Create a video element for each video file
+                    const video = document.createElement('video');
+                    video.src = `http://localhost:5000/uploads/${fileName}`; // Replace with the actual video URL
+                    video.controls = true; // Show video controls (play, pause, etc.)
+
+                    // Create a heading for the video (you can use the file name as the title)
+                    const heading = document.createElement('h2');
+                    heading.textContent = fileName;
+
+                    // Append the video and heading to the list item
+                    li.appendChild(heading);
+                    li.appendChild(video);
+
+                    // Append the list item to the recording list
+                    recordingList.appendChild(li);
+                });
+            });
+    </script>
+</body>
+
+</html>

@@ -10,7 +10,6 @@ const isAuthenticated = (preloaderWindow, callback) => {
   preloaderWindow.webContents
     .executeJavaScript("({...localStorage});", true)
     .then((localStorage) => {
-      console.log(localStorage);
       callback(localStorage.userId); // "number" if exists, or "undefined"
     });
 };
@@ -22,7 +21,6 @@ const login = (email, password, callback) => {
     login_pass: password,
   })
   .then((response) => {
-    console.log(response.data); // Handle the successful response here
     callback(response.data)
     callNotification('Login', "succefully")
   })
@@ -39,7 +37,6 @@ const signup = (email, password, callback) => {
       login_pass: password,
     })
     .then((response) => {
-      console.log(response)
       callback(response.data);
       callNotification("registerd", "user register") // JSON response
     })
@@ -56,7 +53,7 @@ const logout = (mainWindow) => {
 
   setTimeout(() => {
     app.quit();
-  }, 2000);
+  }, 1000);
 };
 
 const loginFailed = (loginWindow) => {

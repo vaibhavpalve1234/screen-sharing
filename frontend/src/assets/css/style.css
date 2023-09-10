@@ -58,6 +58,16 @@ ion-icon {
   padding: 0px 20px;
 }
 
+.top-area {
+  margin-top: 40px;
+}
+.top-area {
+  position: relative;
+  width: 100%;
+  /* height: 70%; */
+}
+
+
 .centered-area {
   margin-top: 40px;
 }
@@ -201,7 +211,7 @@ span.j-icon img {
   width: 50%;
   -webkit-user-select: none;
   -webkit-app-region: drag;
-   z-index: 999;
+  z-index: 999;
 }
 
 .start-timer {
@@ -306,4 +316,42 @@ button.logout-btn.cta-btn .icon-f img {
 button.logout-btn.cta-btn:hover {
   background: #ff7d94;
   transition: 200ms linear;
+}
+
+/* CSS for the "Stream" button */
+.streamButton {
+  text-align: center;
+}
+
+.streamButton button {
+  background-color: #007bff; /* Button background color */
+  color: #fff; /* Button text color */
+  padding: 10px 20px; /* Button padding */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.streamButton button:hover {
+  background-color: #0056b3; /* Hover background color */
+}
+
+/* CSS for additional buttons */
+.additional-buttons {
+  text-align: center;
+  margin-top: 20px; /* Adjust spacing */
+}
+
+.additional-buttons .cta-btn {
+  background-color: #333; /* Button background color */
+  color: #fff; /* Button text color */
+  padding: 10px 20px; /* Button padding */
+  margin: 5px; /* Adjust spacing between buttons */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.additional-buttons .cta-btn:hover {
+  background-color: #555; /* Hover background color */
 }
