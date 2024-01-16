@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.get('/', (req, res) => {
+router.get('/videos', (req, res) => {
     fs.readdir(videoDirectory, (err, videos) => {
         if (err) {
             console.error('Error reading video directory:', err);

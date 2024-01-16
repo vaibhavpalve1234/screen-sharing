@@ -1,9 +1,11 @@
 const express = require('express');
 const http = require('http');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const socketIo = require('socket.io');
 const app = express();
 const server = http.createServer(app);
+const io = socketIo(server);
+const bodyParser = require('body-parser');
+const cors = require('cors');
 require('ejs')
 
 //middlerwares
@@ -21,6 +23,33 @@ const liveRouter = require('./router/liveStream')
 app.use("/", userRouter);
 app.use('/', RecordingRouter)
 app.use('/', liveRouter)
+
+const activeStreams = new Set();
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('startStream', () => {
+    // Handle screen sharing start request
+    // For simplicity, we're not managing individual user sessions in this example
+    activeStreams.add(socket.id);
+    console.log(socket.id)
+    socket.broadcast.emit('userStartedStream', socket.id);
+  });
+
+  socket.on('stopStream', () => {
+    // Handle screen sharing stop request
+    activeStreams.delete(socket.id);
+    socket.broadcast.emit('userStoppedStream', socket.id);
+  });
+
+  socket.on('disconnect', () => {
+    // Handle user disconnect
+    activeStreams.delete(socket.id);
+    socket.broadcast.emit('userDisconnected', socket.id);
+    console.log('A user disconnected');
+  });
+});
 
 
 //server
