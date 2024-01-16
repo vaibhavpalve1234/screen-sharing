@@ -16,7 +16,8 @@ const {
   setSourceAsEntireScreen,
   sendRecordingToServer,
   liveStremStart,
-  liveStremStop
+  liveStremStop,
+  sendListOfRecording
 } = require("./assets/js/video");
 const getSource = require("./assets/js/getSource");
 
@@ -79,34 +80,24 @@ const createPreloaderWindow = () => {
   preloaderWindow.loadFile(path.join(__dirname, "./screens/preloader.html"));
 };
 
-const createLiveWindow = () => {
-  liveStrem = new BrowserWindow({
-    width: 915,
-    height: 720,
-    frame: false,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-    },
-  });
 
-  liveStrem.loadFile(path.join(__dirname, "./screens/live.html"));
-};
 
-const createListWindow = () => {
-  liveStrem = new BrowserWindow({
-    width: 915,
-    height: 720,
-    frame: false,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-    },
-  });
+// const createListWindow = () => {
+//   liveStrem = new BrowserWindow({
+//     width: 915,
+//     height: 720,
+//     frame: false,
+//     webPreferences: {
+//       preload: path.join(__dirname, "preload.js"),
+//     },
+//   });
 
-  liveStrem.loadFile(path.join(__dirname, "./screens/list.html"));
-};
+//   liveStrem.loadFile(path.join(__dirname, "./screens/list.html"));
+// };
 
 // server started then all function run that time 
 app.whenReady().then(() => {
+  console.log("frontend started")
   createPreloaderWindow();
 
   setTimeout(() => {
@@ -145,9 +136,6 @@ ipcMain.on("LOGOUT-DASH", async (event) => {
   logout(dashBoardWindow);
 });
 
-ipcMain.on("LOGOUT-LIVE", async (event) => {
-  logout(liveStrem)
-});
 
 ipcMain.on("LOGIN", async (event, email, password) => {
   login(email, password, function (res) {
@@ -209,9 +197,25 @@ ipcMain.on("NavigateRecordingPage", async () => {
 
 })
 
-ipcMain.on("NavigateRecordingList", async () => {
+const createLiveWindow = () => {
+  liveStrem = new BrowserWindow({
+    width: 915,
+    height: 720,
+    frame: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
 
+  liveStrem.loadFile(path.join(__dirname, "./screens/live.html"));
+};
+
+ipcMain.on("NavigateRecordingList", async (dashBoardWindow) => {
+  const recordings = await sendListOfRecording()
+  console.log(dashBoardWindow)
+  dashBoardWindow.webContents.send('List', recordings);
 })
+
 
 ipcMain.on("NavigateRecordingLive", async (page) => {
   createLiveWindow()
@@ -236,4 +240,8 @@ ipcMain.on("BACKPAGE", () => {
   createDashboardWindow()
   setSourceAsEntireScreen(dashBoardWindow);
   mainWindow.close()
-})
+});
+
+ipcMain.on("LOGOUT-LIVE", async (event) => {
+  logout(liveStrem)
+});

@@ -8,7 +8,7 @@ const axios = require('axios')
 const fs = require("fs");
 const { callNotification } = require("./notification");
 const { API } = require("./constant");
-const serverUrl = API ; // Change this to your Socket.IO server URL
+const serverUrl = API; // Change this to your Socket.IO server URL
 const socket = socketIoClient.connect(serverUrl);
 const folderPath = path.join(__dirname, `../../../files/`);
 const uploadedFiles = new Set();
@@ -195,6 +195,15 @@ async function handleNegotiationNeededEvent(peer) {
   }
 }
 
+async function sendListOfRecording() {
+  try {
+    const response = await axios.get('http://localhost:5000/videos'); // Replace with your actual server endpoint
+    const videoUrls = response.data; // Assuming the response is an array of video URLs
+    return videoUrls 
+  } catch (error) {
+    console.error('Error fetching video URLs:', error);
+  }
+}
 
 module.exports = {
   getInputSources,
@@ -203,6 +212,7 @@ module.exports = {
   sendRecordingToServer,
   liveStremStart,
   liveStremStop,
+  sendListOfRecording
 };
 
 

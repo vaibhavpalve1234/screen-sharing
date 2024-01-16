@@ -14,6 +14,7 @@ const apiObject = {
   logoutLive: () => ipcRenderer.send("LOGOUT-LIVE"),
   streamRecording: () => ipcRenderer.send("NavigateRecordingPage"),// dashboard --> recording page 
   streamList: () => ipcRenderer.send("NavigateRecordingList"),// dashboard --> List page 
+  streamShowList:(callback) => ipcRenderer.on("List", (callback)), // list
   streamLive: () => ipcRenderer.send("NavigateRecordingLive"),// dashboard --> Live page 
   backButton: () => ipcRenderer.send("BACKPAGE"),
   minimize: () => ipcRenderer.send("MINIMIZE-WINDOW"),

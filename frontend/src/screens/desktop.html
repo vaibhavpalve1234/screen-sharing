@@ -37,13 +37,42 @@
                 <button>Recordings..</button>
                 <div class="additional-buttons">
                     <button class="cta-btn" id="streamButton">Record</button>
-                    <button class="cta-btn" id="streamList">List</button>
+                    <button class="cta-btn" id="fetchVideos">Fetch Videos</button>
                     <button class="cta-btn" id="liveStream">Go Live</button>
                     <!-- Add more buttons as needed -->
                 </div>
             </div>
         </div>
+        <div id="videoList"></div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fetchVideosButton = document.getElementById('fetchVideos');
+            const videoList = document.getElementById('videoList');
+
+            fetchVideosButton.addEventListener('click', async () => {
+                try {
+                    // Fetch the list of video URLs from your server (replace with your server endpoint)
+                    const response = await fetch('http://localhost:5000/videos');
+                    const videos = await response.json();
+
+                    // Clear existing video list
+                    videoList.innerHTML = '';
+
+                    // Display each video as an embedded player
+                    videos.forEach((videoUrl, index) => {
+                        const videoElement = document.createElement('video');
+                        videoElement.src = videoUrl;
+                        videoElement.controls = true;
+                        videoList.appendChild(videoElement);
+                    });
+                } catch (error) {
+                    console.error('Error fetching videos:', error);
+                }
+            });
+        });
+
+    </script>
     <script src="../assets/js/renderer.js"></script>
     <script src="../assets/js/logout.js"></script>
 </body>

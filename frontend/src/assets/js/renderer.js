@@ -89,9 +89,9 @@ if(streamButton){
 }
 
 if(streamList){
-  streamList.addEventListener('click', (e)=>{
+  streamList.addEventListener('click', async(e)=>{
     electronAPI.streamList()
-  })
+    })
 }
 
 if(liveStream){
@@ -153,3 +153,4 @@ if(stopLiveStream){
     electronAPI.liveStop()
   })
 }
+

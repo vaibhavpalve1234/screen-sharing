@@ -4,6 +4,8 @@
 <head>
   <title>Recod</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
 </head>
 
 <body>
@@ -13,6 +15,11 @@
         <img src="../assets/img/logo-16.png" alt="title logo" />
         <strong>Recod</strong>
       </div>
+      <!-- <div class="centered-area">
+        <span class="start-timer"><span class="blink-ball"></span>
+          <span class="real-timer">00:00:00</span>
+        </span>
+      </div> -->
       <div class="window-cta">
         <button class="logout-btn cta-btn" title="Logout" id="logout-live">
           <span class="icon-f"><img src="../assets/icons/logout.svg" alt="Logout" /></span>
@@ -30,7 +37,8 @@
       </div>
     </div>
     <div class="centered-area">
-      <video muted></video>
+      <!-- <video muted></video> -->
+      <video muted id="video"></video>
       <span class="start-timer"><span class="blink-ball"></span>
         <span class="real-timer">00:00:00</span>
       </span>
@@ -49,13 +57,11 @@
         <span>Source</span>
       </button>
       <!-- Add Live Stream Start Button -->
-      <button class="live-stream-start btm-btn" id="startLiveStream">
-        <span class="icon-b"><img src="../assets/icons/icons8-live-stream.gif" alt="Live Stream" /></span>
+      <button class="live-stream-start btm-btn" id='startLiveStream' onclick="startStream()">
         <span>Start Live Stream</span>
       </button>
       <!-- Add Live Stream Stop Button -->
-      <button class="live-stream-stop btm-btn" id="stopLiveStream">
-        <span class="icon-b"><img src="../assets/icons/icons8-video-record.gif" alt="Stop Live Stream" /></span>
+      <button class="live-stream-stop btm-btn" id='stop-button' onclick="stopStream()">
         <span>Stop Live Stream</span>
       </button>
     </div>
@@ -64,6 +70,73 @@
       <small>Please Start The Recording First!</small>
     </div>
   </div>
+  <script>
+
+    let stream;
+    let peer;
+    const socket = io('http://localhost:5000');
+
+    async function startStream() {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      document.getElementById("video").srcObject = stream;
+      peer = createPeer();
+      stream.getTracks().forEach(track => peer.addTrack(track, stream));
+      socket.emit('startStream');
+
+      document.getElementById('startLiveStream').style.display = 'none';
+      document.getElementById('stopLiveStream').style.display = 'block';
+    }
+
+    async function stopStream() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        if (peer) {
+          peer.close();
+        }
+      }
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          mandatory: {
+            chromeMediaSource: "desktop",
+            chromeMediaSourceId: sourceId,
+            minWidth: 12288,
+            minHeight: 6480,
+          },
+        }
+      });
+      document.getElementById("video").srcObject = stream;
+      socket.emit('stopStream');
+
+      document.getElementById('startLiveStream').style.display = 'block';
+      document.getElementById('stopLiveStream').style.display = 'none';
+    }
+
+    async function handleNegotiationNeededEvent(peer) {
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
+      const payload = {
+        sdp: peer.localDescription
+      };
+
+      const { data } = await axios.post('http://localhost:5000/broadcast', payload);
+      const desc = new RTCSessionDescription(data.sdp);
+      peer.setRemoteDescription(desc).catch(e => console.log(e));
+    }
+
+    function createPeer() {
+      const peer = new RTCPeerConnection({
+        iceServers: [
+          {
+            urls: "stun:stun.stunprotocol.org"
+          }
+        ]
+      });
+      peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
+
+      return peer;
+    }
+
+  </script>
   <script src="../assets/js/counter.js"></script>
   <script src="../assets/js/renderer.js"></script>
   <script src="../assets/js/logout.js"></script>
